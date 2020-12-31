@@ -36,7 +36,7 @@
     <p></p>
     <p></p>
     <p><label>
-        <select name="postCategory" size="2" required>
+        <select name="postCategory" size="4" required>
             <option disabled>Выберите катерогию</option>
             <c:forEach items="${PostCategory}" var="category">
             <option name="categoryName" value="${category.categoryName}">${category.categoryName}</option>

@@ -18,6 +18,12 @@
 <body>
 <div>Панель категорий</div>
 <p>Список существующих категорий</p>
+<c:url value="/" var="home"/>
+<a href="${home}" >Перейти на домашнюю страницу</a>
+<p></p>
+<c:url value="/admin/add" var="admin"/>
+<a href="${admin}">Перейтиив админ панель</a>
+<p></p>
 <table>
     <thead>
     <tr>

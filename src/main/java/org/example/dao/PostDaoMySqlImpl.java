@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -41,7 +42,7 @@ public class PostDaoMySqlImpl implements PostDao {
         return post;
     };
 
-
+    @Transactional(readOnly = true)
     @Override
     public PostTransfer findPostDatabase(PostTransfer postTransfer) {
         int startPosition = postTransfer.getStartPosition();
@@ -55,18 +56,12 @@ public class PostDaoMySqlImpl implements PostDao {
         return postTransfer1;
     }
 
-
+    @Transactional(readOnly = true)
     @Override
     public Integer countLines() {
         List<Post> postList = jdbcTemplate.query("select * from posts where draft = 'no';", postRowMapper);
         return postList.size();
     }
-
-    @Override
-    public PostCategory findPostCategoryById(Integer id) {
-        return jdbcTemplate.queryForObject("select * from postCategory where categoryId = ? ;", postCategoryRowMapper, id);
-    }
-
 
     public PreparedStatementCreator insertPostIfNoData(Post post) {
         return connection -> {
@@ -97,6 +92,7 @@ public class PostDaoMySqlImpl implements PostDao {
         };
     }
 
+    @Transactional
     @Override
     public Integer save(Post data) throws SQLException {
         Post post = data;
@@ -136,6 +132,7 @@ public class PostDaoMySqlImpl implements PostDao {
         return post;
     };
 
+    @Transactional(readOnly = true)
     @Override
     public Post findById(Integer id) throws SQLException {
         return jdbcTemplate.queryForObject("select * from posts where id=?", fullPostRowMapper, id);
@@ -149,6 +146,12 @@ public class PostDaoMySqlImpl implements PostDao {
     @Override
     public Post update(Post data) throws SQLException {
         return null;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public PostCategory findPostCategoryById(Integer id) {
+        return jdbcTemplate.queryForObject("select * from postCategory where categoryId = ? ;", postCategoryRowMapper, id);
     }
 
     public RowMapper<PostCategory> postCategoryRowMapper = (resultSet, i) -> {
@@ -177,6 +180,7 @@ public class PostDaoMySqlImpl implements PostDao {
         };
     }
 
+    @Transactional
     @Override
     public Integer saveCategory(PostCategory postCategory) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -184,6 +188,7 @@ public class PostDaoMySqlImpl implements PostDao {
         return keyHolder.getKey().intValue();
     }
 
+    @Transactional
     @Override
     public void deleteCategory(Integer id) throws SQLException {
         jdbcTemplate.update("delete from postCategory where categoryId=?", id);
@@ -191,11 +196,13 @@ public class PostDaoMySqlImpl implements PostDao {
 
     public RowMapper<Integer> postCategoryIdRowMapper = (resultSet, i) -> resultSet.getInt("categoryId");
 
+    @Transactional(readOnly = true)
     @Override
     public List<Integer> selectDistinctPostCategoryId() {
         return jdbcTemplate.query("select distinct categoryId from posts;", postCategoryIdRowMapper);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<PostCategory> selectAllCategories() {
         return jdbcTemplate.query("select * from postCategory", postCategoryRowMapper);
